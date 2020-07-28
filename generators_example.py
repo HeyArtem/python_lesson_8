@@ -1,6 +1,30 @@
 # 8.3. Генераторы
 
-# Почувствем разницу между негерторами списков и просто генераторами
+'''
+ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО   ПЛОХО
+
+!!! Почему у нас в лекциях ошибки и их ни кто не освещает, не исправляет
+часть где: 
+Создадим список машиноцветов, 
+помереем обьем памяти....
+
+Используются
+start=time.clock() # Засекаем время
+stop=time.clock() # время после кода
+print('Используемая память полсе вып.фун-ции: ', str(proc.memory_info().rss/1000000))
+print("Заняло {} секунд: ".format(stop-start)) # сколько времени заняло выполнение функции
+
+У меня этот код не работает.
+
+
+
+ Возможно стоит записать урок на чистовик?
+
+'''
+
+
+
+#Почувствем разницу между негерторами списков и просто генераторами
 print('    Почувствем разницу между негерторами списков и просто генераторами')
 
 import sys # будем измерять обьем памяти
@@ -17,7 +41,7 @@ print('обьем памяти simple_list: ',sys.getsizeof(simple_list)) # Пр
 print('   Неявные генераторы ( задаются с помощью круглых скобок)')
 
 '''
-Неявный, по  тому, что очень простой, 
+Неявный, по  тому, что очень простой,
 в нем не использованиы какие то особые сво-ва генераторов
 '''
 
@@ -83,10 +107,14 @@ print('    ЯВНЫЕ генераторы, сложный пример')
 import time
 import os
 import random
-import psutil # модуль котор измеряет количество памяти каждого обьекта
+import psutil
 
 colors = ['White', 'Black', 'Green']
 brands = ['Volvo', 'Lada', 'Audi']
+
+'''
+Я задокстринил эту часть кода, т.к. это влияет на обьем памяти 
+в следующем коде
 
 def cars(num):
     cars_list = []
@@ -98,16 +126,52 @@ def cars(num):
     return cars_list
 
 proc = psutil.Process(os.getpid()) # помереем используемую до выполнения память
-print('Используемая память до вып.фун-ции: ' + str(proc.memory_info().rss/100000)) #memory_info-инф. о кэше, в атрибуте rss хранится текущее значение используемое количество памятив кэше
-start=time.clock() # Засекаем время
+print('Используемая память до вып.фун-ции: ', str(proc.memory_info().rss/1000000)) # memory_info - это вычисление памяти., в атрибуте rss хранится текущее значение используемое количество памятив кэше
+
+time_1 = time.time()
+#start_time = time.localtime()
+#start=time.clock() # Засекаем время
 cars_list=cars(1000000) # Создаем список из 1 млн. обьектов
-stop=time.clock()
+#stop=time.clock() # время после кода
+end_time = time.localtime()
 
-#cars_list = cars(10)
-#print(cars_list)
-#print(type(cars_list))
+proc =psutil.Process(os.getpid()) # измеряем память после выполнения
+print('Используемая память полсе вып.фун-ции: ', str(proc.memory_info().rss/1000000))
 
-proc =psutil.Process(os.getpid()) # мереем память после выполнеия
-print('Используемая память полсе вып.фун-ции: ', + str(proc.memory_info().rss/100000))
+#print("Заняло {} секунд: ".format(stop-start)) # сколько времени заняло выполнение функции
+#time_period = (end_time-start_time)
+elapsed_time = time.time() - time_1
+print('Время исполнения кода: ', elapsed_time)
+#print(time_period)
+'''
 
-print("Заняло {} секунд: ".format(stop-start)) # сколько времени заняло выполнение функции
+print()
+# Теперь тоже самое, но с использованием генератора
+print('   Теперь тоже самое, но с использованием генератора')
+
+def cars_gen(num):
+    for i in range(num):
+        car = {'Цвет':random.choice(colors),
+               'Марка':random.choice(brands),
+               'id':i}
+        yield car
+
+proc_gen = psutil.Process(os.getpid()) # помереем используемую до выполнения память
+print('Используемая память до вып.фун-ции: '+str(proc_gen.memory_info().rss/1000000)) # memory_info - это вычисление памяти., в атрибуте rss хранится текущее значение используемое количество памятив кэше
+
+time_1_gen = time.time()
+#start_time = time.localtime()
+#start=time.clock() # Засекаем время
+cars_list_gen=cars_gen(1000000) # Создаем список из 1 млн. обьектов
+#stop=time.clock() # время после кода
+#end_time_gen = time.localtime()
+time_2_gen = time.time()
+proc_gen =psutil.Process(os.getpid()) # измеряем память после выполнения
+
+print('Используемая память полсе вып.фун-ции: '+str(proc_gen.memory_info().rss/1000000))
+
+print("Время исполнения кода: {} секунд".format(time_1_gen-time_2_gen )) # сколько времени заняло выполнение функции
+
+
+
+
